@@ -1,0 +1,426 @@
+---
+title: "Final Project"
+author: "AB"
+date: "2024-11-20"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Introduction
+The perception of college campuses as idyllic environments set apart from societal turmoil has become increasingly outdated. As Jennings (2007) observed, "The college campus is no longer perceived as a place with a special, erudite atmosphere protected from worldly happenings." In recent years, this shift in perception has been catalyzed by a range of events, including violent crimes, campus protests, and other safety concerns. Notably, high-profile incidents such as the Virginia Tech and Northern Illinois school shootings prompted federal and state policymakers to prioritize campus security. In response, several task forces were established to address safety and security concerns in higher education, as noted in reports such as those from the Campus Security Task Force (2008), Randazzo and Plummer (2009), and the Review Panel (2007) (Schafer, Lee, Burruss, & Giblin, 2018). Despite these efforts, students' perceptions of campus safety remain complex and multifaceted.
+One prominent factor influencing these perceptions is the physical environment of the campus, particularly during nighttime. Research by Maier and DePrince (2019) highlights that students "may feel vulnerable where they believe a criminal may be hiding, or in areas with large open spaces or areas with poor lighting." These vulnerabilities are especially pronounced for students attending late-night study sessions or returning home from evening classes, as poorly lit areas amplify feelings of unease. Additionally, public protests on campuses introduce another layer of complexity to perceptions of safety. Recent "Free Palestine" protests, for example, have sparked debates and tensions nationwide. Benjamin (2012) found that in previous "Free Palestine" protesets more than 80% of respondents in his study believed such events could incite violence against Jewish students, with some participants reporting direct experiences of hostility. The student-run newspaper Daily Nexus noted that "admin is not as aggressive as [other UC] campuses" when is comes to protests; this made me curious as to how accurate that analysis is from the Daily Nexus, and wether or not the UCSB student body feels safe during these protests.
+
+At the University of California, Santa Barbara (UCSB), these issues are especially relevant. UCSB’s campus, has had a series of protests, primarily centered around pro-Palestinian activism and labor disputes. These events have significantly impacted campus dynamics and student perceptions of safety.Moreover, UCSB’s nighttime environment, characterized by stretches of dimly lit paths, poses challenges for students navigating the campus after dark.
+
+Aims of the Study:
+This study aims to explore UCSB students’ perceptions of safety in light of two prominent factors: nighttime visibility and campus protests. Using a generalized randomized block design experiment, the research compares safety perceptions across class levels under three representative scenarios: a campus at night, a campus during protests, and campus during broad daylight.To clarify the control for this experiment would be students response to how safe they feel on campus during broad daylight. Every respondent is randomly given a survey in which they rank on a scale of 1-10, with the lower number indicating a higher sense of safety, how safe they feel on campus given one of the three factors. By focusing on these scenarios, the study seeks to provide a nuanced understanding of the factors shaping students’ sense of safety on a modern college campus.
+
+Hypothesis:
+
+$H_0$:There is no significant difference in students' perceptions of safety across the three on-campus scenarios (control ,nighttime, and during protests)
+
+$H_A$:There is a significant difference in students' perceptions of safety across the three on-campus scenarios (control,nighttime, evening, and during protests).
+
+
+
+Methods
+
+As mentioned in the introduction, this study employed a generalized randomized block design (GRBD) experiment categorized into four different class/grade levels: Freshman, Sophomore, Junior, and Senior. Each class level was required to complete each of the surveys at least once. To ensure fairness in survey selection, I utilized a random generator in R, and the code for this can be found in the results section. This approach guaranteed that each survey had at least one respondent from each class level, fulfilling the necessary conditions for a GRBD.
+
+However, I was unable to achieve a true simple random sample due to resource limitations in this study. Although I randomized which survey each respondent completed, I relied on convenience sampling, as I only approached individuals in high-traffic locations such as the UCSB dining halls and library. A true random sample would have required every member of the UCSB student body to have an equal opportunity to participate. Unfortunately, due to the project's constraints, I couldn't implement a genuinely random sampling method.
+
+For my survey, I created three separate Google Forms and generated individual QR codes for each survey. I approached UCSB students in crowded areas of campus—particularly in the dining halls and library. For each student, I randomly assigned one of the surveys to complete. The surveys gathered information on their grade level and their feelings of safety on campus, with the following three questions:
+
+1. On a scale of 1-10, how safe do you feel on the UCSB campus at night?
+2. On a scale of 1-10, how safe do you feel on campus at UCSB during protests?
+3. On a scale of 1-10, how safe do you feel on campus at UCSB?
+
+Attached is an image of a sample response from the survey.
+
+
+```{r}
+#Image #1
+library(knitr)
+knitr::include_graphics("/Users/arjunbombwal/Documents/PSTAT 122/Survey_Proof.png")
+```
+
+
+Code 
+
+
+```{r}
+ # Random Sampling  method
+survey <- c("Control", "Nightime", "Protest")
+sample(survey, 1)
+```
+
+ 
+
+```{r}
+#Data table:
+# Used Chat GPT and Lab 6 code to create
+control <- data.frame(
+  Grade = c("Senior", "Freshman", "Junior", "Senior", "Senior", "Senior", "Junior", "Freshman", "Senior", "Senior","Senior","Junior","Freshman","Sophmore","Sophmore"),
+  Score = c(2, 3, 8, 6, 2, 10, 9, 2, 1, 10,7,9,1,1,2),
+  SurveyType = "Control"
+)
+
+protest <- data.frame(
+  Grade = c("Junior", "Senior", "Junior", "Junior", "Sophmore", "Sophmore", "Senior", "Junior", "Junior", "Junior","Junior","Senior","Freshman","Freshman","Freshman","Freshman","Freshman"),
+  Score = c(2, 1, 2, 8, 4, 5, 1, 1, 7, 2,2,1,1,1,8,9,1),
+  SurveyType = "Protest"
+)
+
+nighttime <- data.frame(
+  Grade = c("Junior", "Senior", "Senior", "Senior", "Junior", "Junior", "Senior", "Junior", "Junior", "Senior","Freshman","Freshman","Sophmore","Sophmore","Freshman","Senior"),
+  Score = c(10, 1, 4, 1, 3, 8, 9, 9, 9, 9,6,3,1,1,3,4),
+  SurveyType = "Nighttime"
+)
+
+survey_data <- rbind(control, protest, nighttime)
+survey_data$Group <- rep(c("Control", "Protest", "Nighttime"),
+                         times = c(nrow(control), nrow(protest), nrow(nighttime)))
+
+survey_data$Block <- rep(c(control$Grade, protest$Grade,nighttime$Grade))
+                         
+kable(survey_data, caption = "Survey Data Table")
+```
+```{r}
+#Total Number of Responses
+# copied code from Chat GPT
+library(dplyr)
+library(knitr)
+
+# Calculate total responses and format the output
+total_responses <- survey_data %>% 
+  count() %>% 
+  rename("Total Responses" = n)
+
+# Display the output as a neat table
+kable(total_responses)
+
+```
+
+
+```{r}
+#Graph#1
+# Code ammended from Lab#6
+between.var <- seq(1, 20, by = 1)
+
+n_var1 <- NA
+for(i in 1:length(between.var)){
+  n_var1[i] <- power.anova.test(groups = 3,
+                                between.var = between.var[i],
+                                within.var = 11,
+                                power = 0.8, sig.level = 0.05, n = NULL)$n
+}
+
+n_var2 <- NA
+for(i in 1:length(between.var)){
+  n_var2[i] <- power.anova.test(groups = 3,
+                                between.var = between.var[i],
+                                within.var = 5,
+                                power = 0.8, sig.level = 0.05, n = NULL)$n
+}
+
+n_var3 <- NA
+for(i in 1:length(between.var)){
+  n_var3[i] <- power.anova.test(groups = 3,
+                                between.var = between.var[i],
+                                within.var = 20,
+                                power = 0.8, sig.level = 0.05, n = NULL)$n
+}
+
+sample_sizes <- data.frame(
+  n = c(n_var1, n_var2, n_var3),
+  between.var = rep(between.var, 3),
+  within.var = c(rep("11", length(n_var1)),
+                 rep("5", length(n_var2)),
+                 rep("20", length(n_var3)))
+)
+
+
+sample_sizes$within.var <- factor(sample_sizes$within.var, levels = c("5","11","20"))
+library(ggplot2)
+ggplot(data=sample_sizes,mapping=aes(x=between.var,y=n,
+                                     group = within.var, color= within.var))+
+  geom_point()+ geom_line()
+```
+ 
+```{r}
+# copied code from lecture
+
+within.var <- var(survey_data$Score)
+
+print(within.var)
+```
+
+
+```{r}
+#copied code from Lab 6
+library(dplyr)
+
+# Your code
+group_means <- survey_data %>%
+  group_by(SurveyType) %>%
+  summarize(mean = mean(Score))
+
+between_var <- var(group_means$mean)
+print(between_var)
+```
+
+
+```{r}
+#Table #1
+sum_stats <- survey_data %>%
+group_by(SurveyType) %>%
+summarize(mean=mean(Score), var=var(Score))
+knitr::kable(sum_stats)
+```
+
+
+```{r}
+#Table #2
+groupmeans <- c(4.866667,5.062500,3.294118)
+result <- power.anova.test(groups=length(groupmeans),
+between.var=var(groupmeans),
+within.var=11.17174,
+power=0.8, sig.level=0.05, n=NULL)
+
+# result DF + kable copied from Chat
+result_df <- data.frame(
+  "Groups" = result$groups,
+  "Sample Size " = round(result$n, 2),
+  "Between Variance" = round(result$between.var, 4),
+  "Within Variance" = round(result$within.var, 4),
+  "Significance" = result$sig.level,
+  "Power" = result$power
+)
+
+kable(result_df, caption = "Best Case")
+```
+
+
+
+
+```{r}
+#Table#3
+groupmeans <- c(4.866667,5.062500,3.294118)
+result <- power.anova.test(groups=length(groupmeans),
+between.var=var(groupmeans),
+within.var=20,
+power=0.8, sig.level=0.05, n=NULL)
+
+result_df <- data.frame(
+  "Groups" = result$groups,
+  "Sample Size " = round(result$n, 2),
+  "Between Variance" = round(result$between.var, 4),
+  "Within Variance" = round(result$within.var, 4),
+  "Significance" = result$sig.level,
+  "Power" = result$power
+)
+
+kable(result_df, caption = "Worst Case")
+```
+
+
+```{r}
+# Graph #2 
+# Copied code from Lab #6
+library(ggplot2)
+ggplot(data= survey_data, mapping=aes(x=SurveyType, y=Score, fill=Grade)) +
+geom_boxplot() + ggtitle("Grade Comparison")
+```
+
+
+
+
+
+
+```{r}
+#Table #4
+#Credit the code that I used to Lab6
+library(knitr)
+anova_result <- aov(Score ~ SurveyType + Grade, data = survey_data)
+
+input<- as.data.frame(summary(anova_result)[[1]])
+
+kable(input,caption = "Anova Results", digits = 3)
+
+```
+
+
+```{r}
+#Table #5
+model1 <- TukeyHSD(anova_result)
+knitr::kable(model1$SurveyType)
+```
+
+
+
+
+
+
+Normality Check
+
+```{r}
+#Graph #3
+hist(anova_result$residuals, xlab = "residuals", main = "Survey_data Residuals")
+```
+
+
+
+```{r}
+#Graph #4
+qqnorm(anova_result$residuals)
+qqline(anova_result$residuals)
+
+```
+
+```{r}
+#Table #6
+
+Shapiro_test<- shapiro.test(anova_result$residuals)
+
+# formatted code copied from Chat
+library(knitr)
+
+# Extract Shapiro-Wilk test results into a data frame
+shapiro_results <- data.frame(
+  "Test Statistic (W)" = round(Shapiro_test$statistic, 4),
+  "p-value" = format.pval(Shapiro_test$p.value, digits = 4, scientific = FALSE)
+)
+
+# Display the results as a neat table
+kable(shapiro_results, caption = "Shapiro-Wilk Normality Test Results")
+
+```
+
+```{r, cache = TRUE} 
+#Permutation Test 
+# Table #7
+# Copied code from lecture 19
+perm_f <- NA
+reps <- 10000
+
+blocks <- unique(survey_data$Block)
+
+for(i in 1:reps){
+  survey_perm <- survey_data
+  for(curr_block in blocks){
+    ind <- which(survey_perm$Block == curr_block)
+    survey_perm$score[ind] <- sample(survey_perm$score[ind])
+  }
+  perm_f[i] <- summary(aov(Score ~ SurveyType + Grade, data = survey_data))[[1]][1,4]
+}
+
+F <-  summary(aov(Score ~ SurveyType +Grade, data = survey_data))[[1]][1,4]
+sum(perm_f >= F)/reps
+
+
+# Formated code copied from Chat
+
+library(knitr)
+
+
+p_value <- sum(perm_f >= F) / reps
+
+
+perm_test_results <- data.frame(
+  "Observed F-value" = round(F, 4),
+  "p-value" = round(p_value, 4),
+  "Repetitions" = reps
+)
+
+
+kable(perm_test_results, caption = "Permutation Test Results")
+
+
+```
+
+
+
+Results/Discussion: 
+
+- Sample Size Calculation: 
+
+Unfortunately there was no pilot study for me to base my research on which pushed me to conduct a post HOC sample size analysis. This means that I had to conduct my study first and then determine wether or not my sample size was sufficient. In Graph #1 a graph that  shows the relationship  between the sample size needed for the experiment depending on the between group variance and the within group variance. So the greater the between group variance the greater that sample size required and the greater the within group variance the larger the sample size required.To clarify within.var is assuming that the null hypothesis is true where there is no difference between perceptions of campus safety during any of the three scenarios, so it calculating the overall variance in the data set. On the other hand between group variance is assuming the alternative hypothesis where there is a difference in perceptions of campus safety during the three scenarios. From the data collected I found a within group group variance of 11.26064 and a between group variance of  0.9397395. On graph one the green line plots the within variance of the data and is compared to theoretical data sets with a lower and higher within variance. Given the low between group variance from the data is clear that the sample size for this experiment should have been over fifty. 
+
+
+Furthermore I conducted a deeper analysis on the sample size with table’s #2 and #3. Table #2 represents a best  the within.variance was actually equivalent to my data of 11.17174 then we would need 58 samples which is still significantly larger that my sample size of 48.  If the within variance had been larger than I would have required a larger sample size, for instance in the worst case I showed that with a within.var of 20 we needed a sample size of 103 individuals.For these reasons I can conclude that I did not take a large enough sample size to achieve the desired confidence I wanted from my results. Coupled with the fact that this is a convenience sampling the results are most likely not representative of the population.
+
+
+- Graph #2 Analysis:
+
+Graph #2 provides a visual representation of the results through a box plot derived from the data table, with each block/class level grouped by survey type.For the Control survey, the data shows that, on median, Sophomores and Freshmen tend to perceive the UCSB campus as safer, while Seniors and Juniors, on average, have lower safety perceptions under regular campus conditions.
+When examining perceptions of campus safety at night, Juniors appear to feel the least safe, while Sophomores report feeling the most safe. Freshmen and Seniors have similar perceptions of safety, with their median scores indicating moderate levels of comfort at night.During protests, the data reveals that Sophomores, on average, feel the least safe on campus, followed closely by Juniors. In contrast, Freshmen and Seniors report relatively higher perceptions of safety during protests, indicating less concern compared to their peers.
+
+Overall, the graph highlights disparities in safety perceptions across class levels and survey types. However, it also underscores an important limitation of this study: the class levels (blocks) were not evenly represented in the survey, likely contributing to skewed data. As previously discussed in the sample size analysis and earlier in this lab, the lack of a sufficient sample size and the absence of a true random sampling method may have introduced bias into the results. This could explain some of the polarizing trends observed in the graph.
+
+
+- Anova/Tukey Results:
+
+Ignoring the issues identified earlier in this report tables 4 and 5 provide the results from this study.Looking at table #4 the results of the Anova test show that the p-values for the SurveyType is 0.222 and the p-value of the Grade/Block is 0.058. Using a generally accepted alpha value of 0.05  this tells me that neither the class level (Grade) nor the SurveyType had a significant impact on UCSB students perception of Safety on campus. Which technically means that there is no statistically significant evidence  that there is a significant difference in students' perceptions of safety across the three on-campus scenarios (control, nighttime, evening, and protests). Looking at table #5  results of the Tukey test and again using an alpha value of 0.05 it is apparent that all of the p-values between the treatment pairs is greater than 0.05 which means that there is no statistically significant  evidence that there is a difference in means. In the context of this problem this test shows that there is no statistically significant difference in perceptions of safety between the three scenarios of  (control, nighttime, and protests).
+
+
+- Model Checking:
+
+When looking at the normality of the data we look at three tests: Histogram, QQplot/QQline, and the Shapiro test. In Graph #3 we have a Histogram of data that  does not show clear normality of data there is evidence of a right tail curve.Then in Graph #4 for the QQplot a significant amount of the data points do not fall on the QQline indicating that the data is not normal.Lastly fro table #6  the Shapiro test  since the P-value is 0.002356 and it is less  than our accepted alpha value of 0.05 we have to reject the null hypothesis thus we have to assume the data is not normal. Out of all three tests the Shapiro test is the most definitive and least subjective test to prove  the normality of data and it is clear that the data is not normal.
+
+As a result of the data failing the normality test it violated the assumption of normality that is needed for a ANOVA test  results to be considered. To make sure we are correctly accepting the null hypothesis I ran a  permutation test in table #7 and got a p-value of 1 from the permutation test which means that there truly  is no evidence  to reject my null hypothesis. 
+
+
+- Drawbacks:
+
+There were three major drawbacks to this experiment that prevented there to be conclusive results
+
+First, there was an insufficient sample size. As highlighted in the sample size calculations, even if an additional twenty participants had completed the survey, the results could have been more reliable. Furthermore, as shown in Graph #2, there was a noticeable disparity in the number of students sampled for each SurveyType within each block (grade level). 
+This uneven sampling likely caused the data to be skewed. The permutation test also supported this limitation; the p-value of 1 strongly indicated that the sample size was too small to detect meaningful differences.
+
+Second, sampling bias was another critical limitation. As discussed in the Methods section, the lack of resources prevented me from obtaining a true random sample of the UCSB student body. Instead, I relied on convenience sampling, targeting students in specific campus areas. This sampling bias became evident during the normality check, where the data clearly failed to meet normality assumptions. As a result, a permutation test was necessary, since the results of an ANOVA cannot be trusted when the data are not normally distributed.
+
+Lastly, in hindsight, the wording of the survey questions may have been misleading to some respondents. For example, the question, “On a scale of 1-10, how safe do you feel on campus at UCSB?” may have confused participants. It is possible that some respondents misunderstood the scale, thinking a higher score indicated a greater level of safety on campus rather than their personal perception of safety. This misinterpretation could have influenced the responses and further contributed to the inconclusive results.
+
+
+Summary:
+
+In summary disregarding the sampling error and assuming normality of the data the results showed that we have the accept the null hypothesis that There is no significant difference in students' perceptions of safety across the three on-campus scenarios (control ,nighttime, and during protests). Even with the data failing normallity the permutation test also indicates that the null hypothesis should be accepted. That being said no real conclusion can be drawn from this study as mentioned in the Drawbacks section of this lab. What’s more the risk of Type one and Type two errors are significantly higher because the data in this lab failed the normality check. If this lab were to be recreated a significantly larger sample size should be taken from multiple locations across the UCSB campus so that  every student has an equal opportunity of taking the survey. 
+
+
+
+References: 
+
+Jennings, Wesley G., Angela R. Gover, and Dagmar Pudrzynska. "Are institutions of higher learning safe? A descriptive study of campus safety issues and self‐reported campus victimization among male and female college students." Journal of criminal justice education 18.2 (2007): 191-208.
+
+Schafer, J. A., Lee, C., Burruss, G. W., & Giblin, M. J. (2018). College Student Perceptions of Campus Safety Initiatives. Criminal Justice Policy Review, 29(4), 319-340. https://doi.org/10.1177/0887403416631804
+
+
+Maier, S. L., & DePrince, B. T. (2019). College Students’ Fear of Crime and Perception of Safety: The Influence of Personal and University Prevention Measures. Journal of Criminal Justice Education, 31(1), 63–81. https://doi.org/10.1080/10511253.2019.1656757
+
+
+Rossman-Benjamin, T. (2012). Fighting on the front lines: anti-Semitism at the University of California and efforts to combat it. Israel Affairs, 18(3), 485–501. https://doi.org/10.1080/13537121.2012.689525
+
+
+Daily Nexus. (2024, May 10). UCSB students respond to pro-Palestine encampment. Daily Nexus. Retrieved from https://dailynexus.com/2024-05-10/ucsb-students-respond-to-pro-palestine-encampment/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
